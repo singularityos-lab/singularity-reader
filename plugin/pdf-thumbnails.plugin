@@ -1,0 +1,9 @@
+[Plugin]
+Module=pdf-thumbnails
+Name=PDF Thumbnails
+Description=Shows the first page of PDF documents as their icon in Files.
+Authors=Singularity Team
+Copyright=Copyright © 2026 Singularity Team
+Website=https://sinty.dev
+Builtin=false
+X-Singularity-App=dev.sinty.reader

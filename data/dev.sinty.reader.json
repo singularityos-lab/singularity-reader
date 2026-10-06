@@ -1,0 +1,47 @@
+{
+    "schema-id": "dev.sinty.reader",
+    "settings": [
+        {
+            "key": "highlight-color",
+            "label": "Highlight Color",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "markup-color",
+            "label": "Underline and Strikeout Color",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "pen-color",
+            "label": "Pen Color",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "note-color",
+            "label": "Note Color",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "text-color",
+            "label": "Text Box Color",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "timestamp-server",
+            "label": "Timestamp Server for Signatures",
+            "type": "string",
+            "widget": "entry"
+        },
+        {
+            "key": "author",
+            "label": "Annotation Author",
+            "type": "string",
+            "widget": "entry"
+        }
+    ]
+}

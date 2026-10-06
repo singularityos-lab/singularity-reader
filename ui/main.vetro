@@ -1,0 +1,6 @@
+Template(class: "SingularityAppsReaderReaderWindow", parent: "SingularityWidgetsWindow") {
+
+    VBox(id: "main_box", spacing: 0) {
+        Stack(id: "content_stack", vexpand: true, transitionType: "crossfade")
+    }
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="dev.sinty.reader" path="/dev/sinty/reader/">
+    <key name="highlight-color" type="s">
+      <default>'#f5c211'</default>
+      <summary>Default color for highlights</summary>
+    </key>
+    <key name="markup-color" type="s">
+      <default>'#e01b24'</default>
+      <summary>Default color for underline, strikeout and squiggly marks</summary>
+    </key>
+    <key name="pen-color" type="s">
+      <default>'#1c71d8'</default>
+      <summary>Default color for the pen</summary>
+    </key>
+    <key name="note-color" type="s">
+      <default>'#f5c211'</default>
+      <summary>Default color for notes</summary>
+    </key>
+    <key name="text-color" type="s">
+      <default>'#241f31'</default>
+      <summary>Default color for text boxes</summary>
+    </key>
+    <key name="pen-width" type="d">
+      <default>2.0</default>
+      <summary>Pen width in points</summary>
+    </key>
+    <key name="highlight-opacity" type="d">
+      <default>0.45</default>
+      <summary>Opacity of highlights</summary>
+    </key>
+    <key name="author" type="s">
+      <default>''</default>
+      <summary>Name stored as author of new annotations</summary>
+    </key>
+    <key name="signature-width" type="d">
+      <default>150.0</default>
+      <summary>Width of placed signatures in points</summary>
+    </key>
+    <key name="timestamp-server" type="s">
+      <default>''</default>
+      <summary>RFC 3161 timestamp server used when signing</summary>
+    </key>
+    <key name="show-sidebar" type="b">
+      <default>true</default>
+      <summary>Show the sidebar</summary>
+    </key>
+  </schema>
+</schemalist>

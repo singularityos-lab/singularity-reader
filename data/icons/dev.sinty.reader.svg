@@ -1,0 +1,68 @@
+<svg width="236" height="236" viewBox="0 0 236 236" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<clipPath id="cr"><rect width="236" height="236" fill="white"/></clipPath>
+<linearGradient id="cover_r" x1="10" y1="60" x2="226" y2="206" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#f0526b"/>
+<stop offset="100%" stop-color="#b3123a"/>
+</linearGradient>
+<linearGradient id="page_l" x1="20" y1="44" x2="118" y2="190" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#ffffff"/>
+<stop offset="75%" stop-color="#eef4f8"/>
+<stop offset="100%" stop-color="#d9e5ee"/>
+</linearGradient>
+<linearGradient id="page_r" x1="216" y1="44" x2="118" y2="190" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#f7fafc"/>
+<stop offset="70%" stop-color="#e8f0f6"/>
+<stop offset="100%" stop-color="#cfdde8"/>
+</linearGradient>
+<linearGradient id="edge_r" x1="118" y1="170" x2="118" y2="200" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#dfe8ef"/>
+<stop offset="100%" stop-color="#a9bfce"/>
+</linearGradient>
+<linearGradient id="spine_r" x1="104" y1="0" x2="132" y2="0" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+<stop offset="50%" stop-color="#1e3a5f" stop-opacity="0.22"/>
+<stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+</linearGradient>
+<linearGradient id="ribbon_r" x1="150" y1="34" x2="150" y2="96" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#ffb84d"/>
+<stop offset="100%" stop-color="#f08c00"/>
+</linearGradient>
+<radialGradient id="bloom_r" cx="60" cy="60" r="120" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="white" stop-opacity="0.55"/>
+<stop offset="100%" stop-color="white" stop-opacity="0"/>
+</radialGradient>
+<filter id="fshadow_r" x="0" y="20" width="236" height="206" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#400514" flood-opacity="0.5"/></filter>
+<clipPath id="pages_clip">
+<path d="M118 58 C96 44 58 40 22 46 L22 178 C58 172 96 176 118 190 C140 176 178 172 214 178 L214 46 C178 40 140 44 118 58 Z"/>
+</clipPath>
+</defs>
+<g clip-path="url(#cr)">
+<path d="M118 70 C92 58 50 56 10 62 L10 202 C50 196 92 198 118 212 C144 198 186 196 226 202 L226 62 C186 56 144 58 118 70 Z" fill="#6e0a24"/>
+<path d="M118 68 C92 56 50 54 10 60 L10 200 C50 194 92 196 118 210 C144 196 186 194 226 200 L226 60 C186 54 144 56 118 68 Z" fill="#8f0f30"/>
+<path d="M118 66 C92 54 50 52 10 58 L10 198 C50 192 92 194 118 208 C144 194 186 192 226 198 L226 58 C186 52 144 54 118 66 Z" fill="url(#cover_r)" filter="url(#fshadow_r)"/>
+<path d="M118 62 C96 48 58 44 20 50 L20 188 C58 182 96 184 118 198 C140 184 178 182 216 188 L216 50 C178 44 140 48 118 62 Z" fill="url(#edge_r)"/>
+<path d="M118 60 C96 46 58 42 21 48 L21 183 C58 177 96 180 118 194 C140 180 178 177 215 183 L215 48 C178 42 140 46 118 60 Z" fill="#c4d4e0"/>
+<path d="M118 58 C96 44 58 40 22 46 L22 178 C58 172 96 176 118 190 L118 58 Z" fill="url(#page_l)"/>
+<path d="M118 58 C140 44 178 40 214 46 L214 178 C178 172 140 176 118 190 L118 58 Z" fill="url(#page_r)"/>
+<rect x="104" y="40" width="28" height="160" fill="url(#spine_r)"/>
+<g clip-path="url(#pages_clip)">
+<circle cx="60" cy="60" r="120" fill="url(#bloom_r)"/>
+</g>
+<path d="M36 74 C54 71 76 72 100 78" stroke="#3d7a94" stroke-width="3.4" stroke-linecap="round"/>
+<path d="M36 92 C56 89 78 90 102 96" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M32 99 C56 96 80 97 106 103 L104 117 C80 111 56 110 33 113 Z" fill="#ffd43b" fill-opacity="0.8"/>
+<path d="M36 106 C56 103 78 104 102 110" stroke="#3d7a94" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M36 120 C56 117 78 118 102 124" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M36 134 C52 132 68 132 84 135" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M36 152 C56 149 78 150 102 156" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M136 96 C160 90 182 89 200 92" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M136 110 C160 104 182 103 200 106" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M136 124 C160 118 182 117 200 120" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M136 138 C156 133 172 132 186 134" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M136 156 C160 150 182 149 200 152" stroke="#7db0c4" stroke-width="2.2" stroke-linecap="round"/>
+<path d="M141 36 H163 V96 L152 86 L141 96 Z" fill="#c26a00" transform="translate(1.5,1.5)"/>
+<path d="M141 36 H163 V96 L152 86 L141 96 Z" fill="url(#ribbon_r)"/>
+<line x1="214" y1="50" x2="214" y2="176" stroke="white" stroke-opacity="0.35" stroke-width="1"/>
+</g>
+</svg>

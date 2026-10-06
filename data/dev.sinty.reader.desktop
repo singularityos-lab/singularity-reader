@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Reader
+Comment=Read, annotate and sign PDF documents
+Exec=singularity-reader %U
+Icon=dev.sinty.reader
+Terminal=false
+Type=Application
+Categories=Office;Viewer;
+MimeType=application/pdf;application/x-pdf;
+Keywords=pdf;document;viewer;annotate;sign;highlight;
+StartupWMClass=dev.sinty.reader
+X-Singularity-Dock-Recent=true

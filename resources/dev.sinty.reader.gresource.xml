@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/dev/sinty/reader">
+    <file preprocess="xml-stripblanks">ui/main.ui</file>
+    <file alias="icons/scalable/actions/reader-highlighter-symbolic.svg" preprocess="xml-stripblanks">data/icons/symbolic/reader-highlighter-symbolic.svg</file>
+    <file alias="icons/scalable/actions/reader-signature-symbolic.svg" preprocess="xml-stripblanks">data/icons/symbolic/reader-signature-symbolic.svg</file>
+    <file alias="icons/scalable/actions/reader-note-symbolic.svg" preprocess="xml-stripblanks">data/icons/symbolic/reader-note-symbolic.svg</file>
+    <file alias="icons/scalable/actions/reader-pen-symbolic.svg" preprocess="xml-stripblanks">data/icons/symbolic/reader-pen-symbolic.svg</file>
+    <file alias="icons/scalable/actions/reader-select-symbolic.svg" preprocess="xml-stripblanks">data/icons/symbolic/reader-select-symbolic.svg</file>
+  </gresource>
+</gresources>
