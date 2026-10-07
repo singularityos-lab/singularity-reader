@@ -527,10 +527,23 @@ namespace Singularity.Apps.Reader {
             return region != null && !region.is_empty ();
         }
 
+        private static bool from_popup (EventController controller, Widget widget) {
+            var ev = controller.get_current_event ();
+            var native = widget.get_native ();
+            if (ev == null || native == null) return false;
+            return ev.get_surface () != native.get_surface ();
+        }
+
         private void attach_input (PageWidget pw) {
             var drag = new GestureDrag ();
             drag.button = Gdk.BUTTON_PRIMARY;
-            drag.drag_begin.connect ((x, y) => on_drag_begin (pw, x / zoom, y / zoom));
+            drag.drag_begin.connect ((x, y) => {
+                if (from_popup (drag, pw)) {
+                    drag.set_state (EventSequenceState.DENIED);
+                    return;
+                }
+                on_drag_begin (pw, x / zoom, y / zoom);
+            });
             drag.drag_update.connect ((dx, dy) => {
                 double sx, sy;
                 drag.get_start_point (out sx, out sy);
@@ -546,6 +559,10 @@ namespace Singularity.Apps.Reader {
             var click = new GestureClick ();
             click.button = Gdk.BUTTON_PRIMARY;
             click.pressed.connect ((n, x, y) => {
+                if (from_popup (click, pw)) {
+                    click.set_state (EventSequenceState.DENIED);
+                    return;
+                }
                 if (tool == Tool.POLYLINE && n == 2) {
                     finish_polyline ();
                     return;
@@ -557,12 +574,16 @@ namespace Singularity.Apps.Reader {
                 }
             });
             click.released.connect ((n, x, y) => {
+                if (from_popup (click, pw)) return;
                 if (n == 1 && !drag_moved) on_click (pw, x / zoom, y / zoom);
             });
             pw.add_controller (click);
 
             var motion = new EventControllerMotion ();
-            motion.motion.connect ((x, y) => update_cursor (pw, x / zoom, y / zoom));
+            motion.motion.connect ((x, y) => {
+                if (from_popup (motion, pw)) return;
+                update_cursor (pw, x / zoom, y / zoom);
+            });
             pw.add_controller (motion);
         }
 

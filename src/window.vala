@@ -303,7 +303,12 @@ namespace Singularity.Apps.Reader {
                 if (entry != null) entry.activate.connect (() => apply.clicked ());
                 box.append (apply);
                 Idle.add (() => {
-                    editor.grab_focus ();
+                    if (entry != null) {
+                        entry.grab_focus_without_selecting ();
+                        entry.set_position (-1);
+                    } else {
+                        editor.grab_focus ();
+                    }
                     return Source.REMOVE;
                 });
             }
