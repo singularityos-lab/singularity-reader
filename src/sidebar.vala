@@ -158,7 +158,7 @@ namespace Singularity.Apps.Reader {
             cr.set_source_rgb (1, 1, 1);
             cr.paint ();
             cr.scale (scale, scale);
-            doc.page (index).render (cr);
+            doc.render_page (index, cr);
             surface.flush ();
             var bytes = new Bytes (surface.get_data ()[0 : surface.get_stride () * h]);
             var texture = new Gdk.MemoryTexture (w, h, Gdk.MemoryFormat.B8G8R8A8_PREMULTIPLIED, bytes, surface.get_stride ());

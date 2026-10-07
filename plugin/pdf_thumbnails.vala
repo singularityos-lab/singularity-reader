@@ -105,7 +105,10 @@ namespace Singularity.Apps.Reader {
         }
 
         private Gdk.Texture? render (string cache) throws Error {
-            var doc = new Poppler.Document.from_file (uri, null);
+            uint8[] data;
+            FileUtils.get_data (File.new_for_uri (uri).get_path (), out data);
+            uint8[]? fixed_data = Singularity.Apps.Reader.HairlineFix.apply (data);
+            var doc = new Poppler.Document.from_bytes (new Bytes (fixed_data ?? data), null);
             if (doc.get_n_pages () < 1) return null;
             var page = doc.get_page (0);
             double width, height;

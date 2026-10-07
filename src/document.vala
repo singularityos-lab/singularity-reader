@@ -61,6 +61,31 @@ namespace Singularity.Apps.Reader {
             return pages[index];
         }
 
+        private Poppler.Document? display_doc = null;
+        private bool display_ready = false;
+
+        public void render_page (int index, Cairo.Context cr) {
+            if (!touched.contains (index)) {
+                if (!display_ready) {
+                    display_ready = true;
+                    try {
+                        uint8[]? fixed_data = HairlineFix.apply (render_source_bytes (), password);
+                        if (fixed_data != null) display_doc = new Poppler.Document.from_bytes (new Bytes (fixed_data), password);
+                    } catch (Error e) {
+                        debug ("Reader: %s", e.message);
+                    }
+                }
+                if (display_doc != null) {
+                    var fixed_page = display_doc.get_page (index);
+                    if (fixed_page != null) {
+                        fixed_page.render (cr);
+                        return;
+                    }
+                }
+            }
+            pages[index].render (cr);
+        }
+
         public double width (int index) { return widths[index]; }
         public double height (int index) { return heights[index]; }
 
@@ -155,6 +180,8 @@ namespace Singularity.Apps.Reader {
             engine_bytes = data;
             texts.clear ();
             touched.clear ();
+            display_doc = null;
+            display_ready = false;
             setup_pages ();
             modified = true;
             reloaded ();

@@ -103,6 +103,7 @@ app_sources = core_sources + files(
   'src/page_widget.vala',
   'src/document_view.vala',
   'src/render_worker.vala',
+  'src/hairline_fix.vala',
   'src/sidebar.vala',
   'src/signatures.vala',
   'src/annotation_popover.vala',
@@ -125,8 +126,8 @@ executable('singularity-pdf',
 )
 
 shared_module('pdf-thumbnails',
-  files('plugin/pdf_thumbnails.vala'),
-  dependencies: [gtk_dep, cairo_dep, poppler_dep, m_dep, libsingularity_dep, dependency('libpeas-2')],
+  files('plugin/pdf_thumbnails.vala', 'src/hairline_fix.vala'),
+  dependencies: [gtk_dep, gee_dep, cairo_dep, poppler_dep, m_dep, libsingularity_dep, pdf_engine_dep, dependency('libpeas-2')],
   install: true,
   install_dir: get_option('libdir') / 'singularity' / 'plugins' / 'pdf-thumbnails'
 )
@@ -135,7 +136,7 @@ install_data('plugin/pdf-thumbnails.plugin',
 )
 
 reader_test = executable('reader-test',
-  core_sources + files('tests/reader_test.vala'),
+  core_sources + files('src/hairline_fix.vala', 'tests/reader_test.vala'),
   dependencies: [gee_dep, cairo_dep, poppler_dep, m_dep, pdf_engine_dep, dependency('gio-2.0'), dependency('gmodule-2.0')],
   vala_args: ['--pkg', 'cairo', '--pkg', 'posix'],
 )

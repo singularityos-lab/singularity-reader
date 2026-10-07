@@ -14,6 +14,8 @@ namespace Singularity.Apps.Reader {
         private AsyncQueue<RenderJob> queue = new AsyncQueue<RenderJob> ();
         private Thread<void*>? thread = null;
         private Poppler.Document? doc = null;
+        private uint8[] source;
+        private string? source_password;
         private bool running = true;
         public uint generation = 1;
 
@@ -21,6 +23,8 @@ namespace Singularity.Apps.Reader {
 
         public RenderWorker (uint8[] data, string? password) throws Error {
             doc = new Poppler.Document.from_bytes (new Bytes (data), password);
+            source = data;
+            source_password = password;
             thread = new Thread<void*> ("reader-render", run);
         }
 
@@ -45,6 +49,15 @@ namespace Singularity.Apps.Reader {
         }
 
         private void* run () {
+            uint8[]? fixed_data = HairlineFix.apply (source, source_password);
+            if (fixed_data != null) {
+                try {
+                    doc = new Poppler.Document.from_bytes (new Bytes (fixed_data), source_password);
+                } catch (Error e) {
+                    debug ("Reader: %s", e.message);
+                }
+            }
+            source = {};
             while (running) {
                 var job = queue.pop ();
                 if (job.page < 0 || !running) break;

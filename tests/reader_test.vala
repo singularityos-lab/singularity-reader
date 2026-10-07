@@ -309,6 +309,62 @@ void test_stamp_keeps_appearance () {
     assert (dark > 2000);
 }
 
+uint8[] zero_area_pdf () {
+    string content = "q 1 0 0 -1 0 200 cm /CSp cs 0.75 0 0 scn 20 50 160 0 re\nf\n100 20 0 160 re f Q";
+    var sb = new StringBuilder ("%PDF-1.4\n");
+    int[] offsets = {};
+    string[] objs = {
+        "<< /Type /Catalog /Pages 2 0 R >>",
+        "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 4 0 R /Resources << /ColorSpace << /CSp /DeviceRGB >> >> >>",
+        "<< /Length %d >>\nstream\n%s\nendstream".printf (content.length + 1, content)
+    };
+    for (int i = 0; i < objs.length; i++) {
+        offsets += (int) sb.len;
+        sb.append ("%d 0 obj\n%s\nendobj\n".printf (i + 1, objs[i]));
+    }
+    int xref = (int) sb.len;
+    sb.append ("xref\n0 %d\n0000000000 65535 f \n".printf (objs.length + 1));
+    foreach (int o in offsets) sb.append ("%010d 00000 n \n".printf (o));
+    sb.append ("trailer\n<< /Size %d /Root 1 0 R >>\nstartxref\n%d\n%%%%EOF\n".printf (objs.length + 1, xref));
+    return sb.str.data;
+}
+
+int darkest_on_line (uint8[] data) {
+    try {
+        var doc = new Poppler.Document.from_bytes (new Bytes (data), null);
+        var page = doc.get_page (0);
+        var surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, 200, 200);
+        var cr = new Cairo.Context (surface);
+        cr.set_source_rgb (1, 1, 1);
+        cr.paint ();
+        page.render (cr);
+        surface.flush ();
+        unowned uint8[] px = surface.get_data ();
+        int stride = surface.get_stride ();
+        int darkest = 255;
+        for (int y = 148; y <= 152; y++) {
+            for (int x = 40; x < 160; x += 10) {
+                int green = px[y * stride + x * 4 + 1];
+                darkest = int.min (darkest, green);
+            }
+        }
+        return darkest;
+    } catch (Error e) {
+        assert_not_reached ();
+    }
+}
+
+void test_zero_area_borders () {
+    uint8[] original = zero_area_pdf ();
+    assert (darkest_on_line (original) > 200);
+    uint8[]? fixed_data = Singularity.Apps.Reader.HairlineFix.apply (original);
+    assert (fixed_data != null);
+    assert (darkest_on_line (fixed_data) < 120);
+    uint8[] plain = "0 0 10 10 re f (re f) Tj".data;
+    assert (Singularity.Apps.Reader.HairlineFix.rewrite (plain) == null);
+}
+
 int main (string[] args) {
     Test.init (ref args);
     sample_path = Path.build_filename (Environment.get_tmp_dir (), "reader-test-%s.pdf".printf (Uuid.string_random ().substring (0, 8)));
@@ -323,6 +379,7 @@ int main (string[] args) {
     Test.add_func ("/reader/markup-save", test_markup_and_save);
     Test.add_func ("/reader/stamp-appearance", test_stamp_keeps_appearance);
     Test.add_func ("/reader/overwrite-mode", test_overwrite_keeps_mode);
+    Test.add_func ("/reader/zero-area-borders", test_zero_area_borders);
     int result = Test.run ();
     FileUtils.remove (sample_path);
     return result;
