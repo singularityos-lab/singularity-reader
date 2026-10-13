@@ -185,6 +185,13 @@ pro_test = executable('pro-test',
 )
 test('pro', pro_test, env: ['TMPDIR=' + meson.current_build_dir(), 'GSETTINGS_BACKEND=memory', 'LANGUAGE=en', 'LC_ALL=C.UTF-8'], timeout: 300)
 
+features_test = executable('features-test',
+  app_sources + files('tests/features_test.vala'),
+  dependencies: app_deps,
+  vala_args: ['--pkg', 'cairo'],
+)
+test('features', features_test, env: ['TMPDIR=' + meson.current_build_dir(), 'GSETTINGS_BACKEND=memory', 'LANGUAGE=en', 'LC_ALL=C.UTF-8'], timeout: 300)
+
 cert_encryption_test = executable('cert-encryption-test',
   signing_sources + files('tests/cert_encryption_test.vala'),
   dependencies: [gee_dep, cairo_dep, m_dep, pdf_engine_dep, gnutls_dep, dependency('gio-2.0')],

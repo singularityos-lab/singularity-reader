@@ -128,9 +128,11 @@ Options:
                     var docs = new Gee.ArrayList<Singularity.Pdf.Document> ();
                     string[] titles = {};
                     for (int i = 0; i < rest.length; i++) {
-                        docs.add (open (i));
                         string b = Path.get_basename (rest[i]);
-                        titles += b.has_suffix (".pdf") ? b.substring (0, b.length - 4) : b;
+                        if (b.down ().has_suffix (".pdf")) docs.add (open (i));
+                        else docs.add (Singularity.Pdf.Scans.from_images ({ rest[i] }));
+                        int dot = b.last_index_of_char ('.');
+                        titles += dot > 0 ? b.substring (0, dot) : b;
                     }
                     write (Singularity.Pdf.Pages.merge (docs, titles).save ());
                     return 0;
