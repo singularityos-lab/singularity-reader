@@ -157,10 +157,12 @@ namespace Singularity.Apps.Reader {
                 double top;
                 string uri;
                 Singularity.Pdf.Outline.target_of (e, a.dict, out page, out top, out uri);
-                string target = uri != "" ? uri : (page >= 0 ? _("Page %d").printf (page + 1) : _("No target"));
+                string target = uri;
+                if (target == "") target = page >= 0 ? _("Page %d").printf (page + 1) : _("No target");
                 var exp = new ExpanderRow (target, _("On page %d").printf (a.page + 1), "insert-link-symbolic");
                 var edit = new HintEntryRow (_("Link To"), _("Web address, page number or file"));
-                edit.text = uri != "" ? uri : (page >= 0 ? (page + 1).to_string () : "");
+                if (uri != "") edit.text = uri;
+                else edit.text = page >= 0 ? (page + 1).to_string () : "";
                 int lp = a.page;
                 int num = a.reference.num;
                 edit.entry_activated.connect (() => {
