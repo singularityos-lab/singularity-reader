@@ -21,6 +21,7 @@ namespace Singularity.Apps.Reader {
             text.bottom_margin = 64;
             text.left_margin = 24;
             text.right_margin = 24;
+            text.tabs = new Pango.TabArray.with_positions (1, true, Pango.TabAlign.LEFT, 140);
             text.add_css_class ("reader-reflow");
             text.get_style_context ().add_provider (provider, STYLE_PROVIDER_PRIORITY_USER + 10);
             var clamp = new Clamp (text, 760);
@@ -28,11 +29,11 @@ namespace Singularity.Apps.Reader {
             scroll.vexpand = true;
             scroll.hscrollbar_policy = PolicyType.NEVER;
             scroll.child = clamp;
-            Singularity.Widgets.apply_titlebar_inset (clamp);
             var bar = new Box (Orientation.HORIZONTAL, 6);
             bar.halign = Align.CENTER;
             bar.margin_top = 6;
             bar.margin_bottom = 6;
+            Singularity.Widgets.apply_titlebar_inset (bar);
             var smaller = new Button.from_icon_name ("zoom-out-symbolic");
             smaller.tooltip_text = _("Smaller Text");
             smaller.clicked.connect (() => set_size (size - 1));
@@ -86,7 +87,7 @@ namespace Singularity.Apps.Reader {
 
         private Gee.ArrayList<Para> paragraphs (ReaderDocument doc, int index) {
             var result = new Gee.ArrayList<Para> ();
-            string raw = doc.text (index);
+            string raw = doc.flowing_text (index);
             var cur = new StringBuilder ();
             foreach (var line in raw.split ("\n")) {
                 string l = line.strip ();
@@ -95,6 +96,14 @@ namespace Singularity.Apps.Reader {
                         result.add (make (cur.str));
                         cur.truncate ();
                     }
+                    continue;
+                }
+                if (l.contains ("\t")) {
+                    if (cur.len > 0) {
+                        result.add (make (cur.str));
+                        cur.truncate ();
+                    }
+                    result.add (make (l));
                     continue;
                 }
                 if (cur.len > 0) {
@@ -114,7 +123,7 @@ namespace Singularity.Apps.Reader {
         private Para make (string text) {
             var p = new Para ();
             p.text = text;
-            p.heading = text.char_count () < 60 && !text.has_suffix (".") && text.get_char (0).isupper () && !text.contains (",");
+            p.heading = text.char_count () < 60 && !text.has_suffix (".") && text.get_char (0).isupper () && !text.contains (",") && !text.contains ("\t");
             return p;
         }
     }

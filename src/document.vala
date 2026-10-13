@@ -100,6 +100,33 @@ namespace Singularity.Apps.Reader {
             return texts[index];
         }
 
+        public string flowing_text (int index) {
+            string raw = text (index);
+            Poppler.Rectangle[] boxes;
+            if (!pages[index].get_text_layout (out boxes)) return raw;
+            var result = new StringBuilder ();
+            int i = 0, k = 0;
+            unichar c;
+            bool open = false;
+            double last_x2 = 0, last_y1 = 0, last_width = 0;
+            while (raw.get_next_char (ref i, out c)) {
+                if (k < boxes.length && !c.isspace ()) {
+                    var b = boxes[k];
+                    double width = b.x2 - b.x1;
+                    if (open && (b.y1 - last_y1).abs () < 2 && b.x1 - last_x2 > double.max (last_width, width) * 1.5 + 2) result.append_c ('\t');
+                    open = true;
+                    last_x2 = b.x2;
+                    last_y1 = b.y1;
+                    last_width = width;
+                } else {
+                    open = false;
+                }
+                result.append_unichar (c);
+                k++;
+            }
+            return result.str;
+        }
+
         public int rotation (int index) {
             if (rotations[index] >= 0) return rotations[index];
             var page = pages[index];

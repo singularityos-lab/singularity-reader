@@ -53,16 +53,28 @@ namespace Singularity.Apps.Reader {
             var cur = new StringBuilder ();
             int i = 0;
             unichar c;
-            string t = text.replace ("-\n", "").replace ("\n", " ");
+            var joined = new StringBuilder ();
+            foreach (var line in text.replace ("-\n", "").split ("\n")) {
+                string l = line.strip ();
+                if (l == "") continue;
+                bool ends = l.has_suffix (".") || l.has_suffix ("!") || l.has_suffix ("?") || l.has_suffix (":");
+                if (l.contains ("\t") || (!ends && l.char_count () < 60)) {
+                    joined.append (l.replace ("\t", " ")).append (".\n ");
+                    continue;
+                }
+                joined.append (l).append_c (' ');
+            }
+            string t = joined.str.replace ("\n", "");
             while (t.get_next_char (ref i, out c)) {
                 cur.append_unichar (c);
                 if ((c == '.' || c == '!' || c == '?') && (i >= t.length || t[i] == ' ')) {
                     string s = cur.str.strip ();
-                    if (s.char_count () > 25) result += s;
+                    if (s.char_count () > 25 && !(s in result)) result += s;
                     cur.truncate ();
                 }
             }
-            if (cur.str.strip ().char_count () > 25) result += cur.str.strip ();
+            string rest = cur.str.strip ();
+            if (rest.char_count () > 25 && !(rest in result)) result += rest;
             return result;
         }
 
@@ -114,12 +126,12 @@ namespace Singularity.Apps.Reader {
         public override void build () {
             var aloud = add_group (_("Read Aloud"));
             var page = new ActionRow (_("Read This Page"), null, "media-playback-start-symbolic");
-            page.activated.connect (() => speak (ctx.document.text (ctx.current_page)));
+            page.activated.connect (() => speak (ctx.document.flowing_text (ctx.current_page)));
             aloud.add_row (page);
             var from = new ActionRow (_("Read from This Page to the End"), null, "media-playback-start-symbolic");
             from.activated.connect (() => {
                 var sb = new StringBuilder ();
-                for (int p = ctx.current_page; p < ctx.document.n_pages; p++) sb.append (ctx.document.text (p)).append ("\n");
+                for (int p = ctx.current_page; p < ctx.document.n_pages; p++) sb.append (ctx.document.flowing_text (p)).append ("\n");
                 speak (sb.str);
             });
             aloud.add_row (from);
@@ -144,7 +156,7 @@ namespace Singularity.Apps.Reader {
             summary.get_parent ().visible = false;
             make.activated.connect (() => {
                 var sb = new StringBuilder ();
-                for (int p = 0; p < ctx.document.n_pages; p++) sb.append (ctx.document.text (p)).append ("\n");
+                for (int p = 0; p < ctx.document.n_pages; p++) sb.append (ctx.document.flowing_text (p)).append ("\n");
                 int n = (int) double.max (3, double.min (10, ctx.document.n_pages * 1.5));
                 var lines = Summarizer.summarize (sb.str, n);
                 summary.label = lines.length == 0 ? _("There is not enough text to summarize.") : "• " + string.joinv ("\n• ", lines);
