@@ -7,6 +7,7 @@ namespace Singularity.Apps.Reader {
     public class ReaderWindow : Singularity.Widgets.Window {
         [GtkChild] unowned Box main_box;
         [GtkChild] unowned Stack content_stack;
+        private Box popover_host;
 
         private ReaderApp app;
         private DocumentView view;
@@ -63,6 +64,7 @@ namespace Singularity.Apps.Reader {
             });
             main_box.remove (content_stack);
             var split = new Box (Orientation.HORIZONTAL, 0);
+            popover_host = split;
             split.vexpand = true;
             content_stack.hexpand = true;
             split.append (content_stack);
@@ -507,9 +509,9 @@ namespace Singularity.Apps.Reader {
         }
 
         private void anchor_to_bubble (Popover pop, Widget bubble) {
-            if (pop.get_parent () == null) pop.set_parent (content_stack);
+            if (pop.get_parent () == null) pop.set_parent (popover_host);
             Graphene.Rect bounds;
-            if (bubble.compute_bounds (content_stack, out bounds)) {
+            if (bubble.compute_bounds (popover_host, out bounds)) {
                 var rect = Gdk.Rectangle ();
                 rect.x = (int) bounds.origin.x;
                 rect.y = (int) bounds.origin.y;
@@ -521,7 +523,7 @@ namespace Singularity.Apps.Reader {
         }
 
         private ContextMenu bubble_menu (Widget bubble) {
-            var menu = new ContextMenu (content_stack);
+            var menu = new ContextMenu (popover_host);
             anchor_to_bubble (menu, bubble);
             return menu;
         }
