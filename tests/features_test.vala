@@ -356,6 +356,118 @@ void test_recovery (string path) throws Error {
     check (left == 0 && poppler (original).get_n_pages () == 3, "recovery copy removed after saving, original untouched");
 }
 
+void test_split (string path) throws Error {
+    var e = Singularity.Pdf.Document.open_file (path);
+    var items = new Gee.ArrayList<Singularity.Pdf.OutlineItem> ();
+    foreach (int page in new int[] { 0, 2, 4 }) {
+        var item = new Singularity.Pdf.OutlineItem ();
+        item.title = "Part %d".printf (page / 2 + 1);
+        item.page = page;
+        item.top = 800;
+        item.children = new Gee.ArrayList<Singularity.Pdf.OutlineItem> ();
+        items.add (item);
+    }
+    Singularity.Pdf.Outline.write (e, items);
+    var outlined = Singularity.Pdf.Document.open_bytes (e.save ());
+    string[] titles;
+    var parts = Singularity.Pdf.Pages.split_by_outline (outlined, out titles);
+    int[] counts = {};
+    foreach (var part in parts) counts += poppler (part.save ()).get_n_pages ();
+    check (parts.size == 3 && titles[1] == "Part 2" && counts[0] == 2 && counts[1] == 2 && counts[2] == 2,
+        "split at the bookmarks into %d files named after them".printf (parts.size));
+    var opts = new Singularity.Pdf.SaveOptions ();
+    opts.garbage_collect = true;
+    int64 limit = Singularity.Pdf.Pages.extract (outlined, { 0, 1, 2 }).save (opts).length + 64;
+    var sized = Singularity.Pdf.Pages.split_by_size (outlined, limit);
+    bool under = true;
+    int total = 0;
+    foreach (var part in sized) {
+        var data = part.save (opts);
+        if (data.length > limit) under = false;
+        total += poppler (data).get_n_pages ();
+    }
+    check (sized.size >= 2 && under && total == 6, "split by size into %d files under %lld bytes, 6 pages kept".printf (sized.size, limit));
+}
+
+void test_resize (string path) throws Error {
+    var e = Singularity.Pdf.Document.open_file (path);
+    Singularity.Pdf.Pages.resize (e, { 0 }, 420, 595, true);
+    var pd = poppler (e.save ());
+    double w, h;
+    pd.get_page (0).get_size (out w, out h);
+    var page = pd.get_page (0);
+    var found = page.find_text ("Chapter 1");
+    bool inside = found.length () == 1 && found.data.x2 < 420 && found.data.y2 < 595;
+    double w2, h2;
+    pd.get_page (1).get_size (out w2, out h2);
+    check ((int) w == 420 && (int) h == 595 && inside && (int) w2 == 595, "page fitted to A5 with its content scaled inside, other pages untouched");
+}
+
+void test_batch () throws Error {
+    string input = Path.build_filename (tmpdir, "batch-in");
+    string output = Path.build_filename (tmpdir, "batch-out");
+    DirUtils.create_with_parents (input, 0755);
+    DirUtils.create_with_parents (output, 0755);
+    foreach (string name in new string[] { "a.pdf", "b.pdf" }) {
+        string src = sample ("batch-" + name, 2);
+        FileUtils.rename (src, Path.build_filename (input, name));
+    }
+    int done = 0;
+    var dir = Dir.open (input);
+    string? name;
+    while ((name = dir.read_name ()) != null) {
+        uint8[] data;
+        FileUtils.get_data (Path.build_filename (input, name), out data);
+        data = Operations.sanitize (data, "");
+        data = Operations.number_pages (data, "", name);
+        data = Operations.watermark (data, "", "DRAFT");
+        data = Operations.tag (data, "", "en");
+        int remaining;
+        data = Operations.pdfa (data, "", "2b", out remaining);
+        data = Operations.optimize (data, "", 150, 75);
+        data = Operations.protect (data, "", "secret");
+        FileUtils.set_data (Path.build_filename (output, name), data);
+        done++;
+    }
+    int good = 0;
+    foreach (string n in new string[] { "a.pdf", "b.pdf" }) {
+        uint8[] data;
+        FileUtils.get_data (Path.build_filename (output, n), out data);
+        bool locked = false;
+        try {
+            poppler (data);
+        } catch (Error err) {
+            locked = true;
+        }
+        var pd = poppler (data, "secret");
+        string t = page_text (pd, 1).replace ("\n", "");
+        if (locked && pd.get_n_pages () == 2 && t.contains ("DRAFT") && t.contains ("2/2")) good++;
+    }
+    check (done == 2 && good == 2, "batch steps applied to both files of the folder: watermark, numbers, PDF/A, optimize, password");
+}
+
+void test_read_aloud (string path) throws Error {
+    string synth = Path.build_filename (tmpdir, "espeak-ng");
+    string spoken = Path.build_filename (tmpdir, "spoken.txt");
+    FileUtils.set_contents (synth, "#!/bin/sh\ncat > '%s'\n".printf (spoken));
+    FileUtils.chmod (synth, 0755);
+    Environment.set_variable ("SINGULARITY_TTS", synth, true);
+    var doc = new ReaderDocument (File.new_for_path (path), null);
+    ReadAloud.speak (doc.text (1));
+    var loop = new MainLoop ();
+    Timeout.add (100, () => {
+        if (!ReadAloud.speaking) {
+            loop.quit ();
+            return Source.REMOVE;
+        }
+        return Source.CONTINUE;
+    });
+    loop.run ();
+    string heard;
+    FileUtils.get_contents (spoken, out heard);
+    check (heard.contains ("Chapter 2") && heard.contains ("The parties agree"), "page two text handed to the speech synthesizer");
+}
+
 int main (string[] args) {
     Intl.setlocale ();
     tmpdir = DirUtils.make_tmp ("reader-features-XXXXXX");
@@ -372,6 +484,10 @@ int main (string[] args) {
         test_xfa (sample ("xfa.pdf"));
         test_outline (sample ("outline.pdf"));
         test_recovery (sample ("recovery.pdf"));
+        test_split (sample ("split.pdf", 6));
+        test_resize (sample ("resize.pdf"));
+        test_batch ();
+        test_read_aloud (sample ("aloud.pdf"));
     } catch (Error e) {
         printerr ("FAIL: %s\n", e.message);
         return 1;
