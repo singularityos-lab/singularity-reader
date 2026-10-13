@@ -17,6 +17,7 @@ namespace Singularity.Apps.Reader {
             add_css_class ("reader-view");
             flow = new FlowBox ();
             flow.selection_mode = SelectionMode.MULTIPLE;
+            flow.activate_on_single_click = false;
             flow.homogeneous = true;
             flow.column_spacing = 18;
             flow.row_spacing = 18;
