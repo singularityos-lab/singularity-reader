@@ -185,7 +185,7 @@ namespace Singularity.Apps.Reader {
             var quit_action = new SimpleAction ("quit", null);
             quit_action.activate.connect (() => {
                 var windows = new Gee.ArrayList<Gtk.Window> ();
-                foreach (var w in get_windows ()) windows.add (w);
+                foreach (var w in get_windows ().copy ()) windows.add (w);
                 foreach (var w in windows) w.close ();
             });
             add_action (quit_action);
