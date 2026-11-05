@@ -3,6 +3,34 @@ using Singularity.Widgets;
 
 namespace Singularity.Apps.Reader {
 
+    private class TintedThumb : Widget {
+        public Picture picture = new Picture ();
+        private DocumentView view;
+        private ulong handler;
+
+        public TintedThumb (DocumentView view) {
+            this.view = view;
+            layout_manager = new BinLayout ();
+            halign = Align.CENTER;
+            picture.set_parent (this);
+            handler = view.page_tint_changed.connect (queue_draw);
+        }
+
+        public override void dispose () {
+            if (handler != 0) view.disconnect (handler);
+            handler = 0;
+            picture.unparent ();
+            base.dispose ();
+        }
+
+        public override void snapshot (Gtk.Snapshot snapshot) {
+            bool tinted = view.page_tint != null;
+            if (tinted) snapshot.push_color_matrix ((Graphene.Matrix) view.page_tint, view.page_tint_offset);
+            snapshot_child (picture, snapshot);
+            if (tinted) snapshot.pop ();
+        }
+    }
+
     public class ReaderSidebar : AppSidebar {
         private const int THUMB_WIDTH = 120;
 
@@ -35,22 +63,24 @@ namespace Singularity.Apps.Reader {
                 var box = new Box (Orientation.VERTICAL, 4);
                 box.margin_top = 6;
                 box.margin_bottom = 6;
-                var picture = new Picture ();
+                var thumb = new TintedThumb (view);
+                var picture = thumb.picture;
                 picture.add_css_class ("reader-thumbnail");
                 picture.can_shrink = false;
                 picture.halign = Align.CENTER;
                 var label = new Label ("");
                 label.add_css_class ("caption");
                 label.add_css_class ("dim-label");
-                box.append (picture);
+                box.append (thumb);
                 box.append (label);
                 item.child = box;
             });
             factory.bind.connect ((obj) => {
                 var item = (ListItem) obj;
                 var box = (Box) item.child;
-                var picture = (Picture) box.get_first_child ();
-                var label = (Label) picture.get_next_sibling ();
+                var thumb = (TintedThumb) box.get_first_child ();
+                var picture = thumb.picture;
+                var label = (Label) thumb.get_next_sibling ();
                 int index = (int) item.position;
                 var doc = view.document;
                 if (doc == null || index >= doc.n_pages) return;

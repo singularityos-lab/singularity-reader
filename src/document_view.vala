@@ -99,6 +99,7 @@ namespace Singularity.Apps.Reader {
         public signal void search_finished (Gee.List<SearchHit> results);
         public signal void link_activated (string uri);
         public signal void edited ();
+        public signal void page_tint_changed ();
         public signal void area_picked (int page, Poppler.Rectangle area, Widget page_widget);
         public signal void point_picked (int page, double x, double y, Widget page_widget);
         public signal void polyline_done (int page, double[] points, Widget page_widget);
@@ -154,6 +155,7 @@ namespace Singularity.Apps.Reader {
         private void queue_pages () {
             if (pages == null) return;
             foreach (var pw in pages) pw.queue_draw ();
+            page_tint_changed ();
         }
 
         public DocumentView (GLib.Settings settings) {
