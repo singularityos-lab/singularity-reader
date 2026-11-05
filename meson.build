@@ -199,3 +199,13 @@ cert_encryption_test = executable('cert-encryption-test',
   vala_args: ['--pkg', 'cairo'],
 )
 test('cert-encryption', cert_encryption_test, timeout: 120)
+
+reader_service_conf = configuration_data()
+reader_service_conf.set('bindir', get_option('prefix') / get_option('bindir'))
+configure_file(
+  input: 'data/dev.sinty.reader.service.in',
+  output: 'dev.sinty.reader.service',
+  configuration: reader_service_conf,
+  install: true,
+  install_dir: get_option('datadir') / 'dbus-1' / 'services'
+)
