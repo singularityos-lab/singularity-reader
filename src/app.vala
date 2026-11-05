@@ -48,6 +48,7 @@ namespace Singularity.Apps.Reader {
 
         public ReaderApp () {
             Object (application_id: "dev.sinty.reader", flags: ApplicationFlags.HANDLES_OPEN);
+            ReaderIntents.install (this);
         }
 
         protected override void startup () {

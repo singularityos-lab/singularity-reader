@@ -25,6 +25,7 @@ namespace Singularity.Apps.Reader {
         private bool closing_confirmed = false;
 
         public ReaderDocument? document { get { return view.document; } }
+        internal DocumentView document_view { get { return view; } }
         public PageGrid page_grid;
         private ToolPanel tool_panel;
         private Revealer tool_revealer;

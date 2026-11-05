@@ -107,6 +107,7 @@ app_sources = core_sources + files(
   'src/sidebar.vala',
   'src/signatures.vala',
   'src/annotation_popover.vala',
+  'src/agent_intents.vala',
 ) + export_sources + signing_sources + pro_sources + [resources]
 
 app_deps = [gtk_dep, gee_dep, cairo_dep, poppler_dep, m_dep, libsingularity_dep, pdf_engine_dep, gnutls_dep, dependency('zlib'), dependency('libsoup-3.0'), dependency('gmodule-2.0')]
