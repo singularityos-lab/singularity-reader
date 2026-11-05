@@ -107,9 +107,60 @@ namespace Singularity.Apps.Reader {
         public string pick_cursor = "crosshair";
         public int poly_limit = 0;
 
+        public Graphene.Matrix? page_tint = null;
+        public Graphene.Vec4 page_tint_offset;
+
+        private void apply_page_mode () {
+            float[] hue = { -0.574f, 0.426f, 0.426f, 1.43f, 0.43f, 1.43f, 0.144f, 0.144f, -0.856f };
+            string mode = settings.get_string ("page-mode");
+            float[] m = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+            float[] off = { 0, 0, 0, 0 };
+            float[] tint = { 1, 1, 1 };
+            float base_level = 0, span = 0;
+            switch (mode) {
+            case "dim":
+                for (int i = 0; i < 3; i++) m[i * 5] = 0.72f;
+                break;
+            case "sepia":
+                float[] sepia = { 0.393f, 0.349f, 0.272f, 0.769f, 0.686f, 0.534f, 0.189f, 0.168f, 0.131f };
+                for (int r = 0; r < 3; r++) for (int c = 0; c < 3; c++) m[r * 4 + c] = sepia[r * 3 + c] * 0.94f;
+                break;
+            case "dark":
+                base_level = 0.12f;
+                span = 0.78f;
+                break;
+            case "night":
+                base_level = 0.07f;
+                span = 0.66f;
+                tint = { 1.0f, 0.86f, 0.68f };
+                break;
+            default:
+                page_tint = null;
+                queue_pages ();
+                return;
+            }
+            if (span > 0) {
+                for (int r = 0; r < 3; r++) for (int c = 0; c < 3; c++) m[r * 4 + c] = -span * hue[r * 3 + c] * tint[c];
+                for (int c = 0; c < 3; c++) off[c] = (base_level + span) * tint[c];
+            }
+            var mat = Graphene.Matrix ();
+            mat.init_from_float (m);
+            page_tint = mat;
+            page_tint_offset = Graphene.Vec4 ();
+            page_tint_offset.init (off[0], off[1], off[2], off[3]);
+            queue_pages ();
+        }
+
+        private void queue_pages () {
+            if (pages == null) return;
+            foreach (var pw in pages) pw.queue_draw ();
+        }
+
         public DocumentView (GLib.Settings settings) {
             Object (orientation: Orientation.VERTICAL, spacing: 0);
             this.settings = settings;
+            settings.changed["page-mode"].connect (() => apply_page_mode ());
+            apply_page_mode ();
             add_css_class ("reader-view");
             scroll = new ScrolledWindow ();
             scroll.hexpand = true;

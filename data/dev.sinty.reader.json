@@ -2,6 +2,34 @@
     "schema-id": "dev.sinty.reader",
     "settings": [
         {
+            "key": "page-mode",
+            "label": "Page Colors",
+            "type": "string",
+            "widget": "combo",
+            "options": [
+                {
+                    "id": "normal",
+                    "label": "Normal"
+                },
+                {
+                    "id": "dim",
+                    "label": "Dimmed"
+                },
+                {
+                    "id": "dark",
+                    "label": "Dark"
+                },
+                {
+                    "id": "sepia",
+                    "label": "Sepia"
+                },
+                {
+                    "id": "night",
+                    "label": "Night"
+                }
+            ]
+        },
+        {
             "key": "highlight-color",
             "label": "Highlight Color",
             "type": "string",

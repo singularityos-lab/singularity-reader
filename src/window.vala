@@ -437,6 +437,7 @@ namespace Singularity.Apps.Reader {
         private Gee.ArrayList<Widget> doc_bubbles = new Gee.ArrayList<Widget> ();
         private Button tool_bubble;
         private Button zoom_bubble;
+        private Button mode_bubble;
         private Button find_bubble;
         private Button sign_bubble;
         private Popover? find_popover = null;
@@ -495,6 +496,8 @@ namespace Singularity.Apps.Reader {
 
             zoom_bubble = add_bubble_icon ("zoom-fit-best-symbolic", _("Zoom"), () => show_zoom_menu ());
             track (zoom_bubble);
+            mode_bubble = add_bubble_icon ("weather-clear-night-symbolic", _("Page Colors"), () => show_mode_menu ());
+            track (mode_bubble);
 
             page_total = add_bubble_label ("", force_ssd);
             track (page_total);
@@ -571,6 +574,18 @@ namespace Singularity.Apps.Reader {
                     set_tool ((Tool) tool);
                     sync_tool_buttons ();
                 });
+            }
+            popup_menu (menu);
+        }
+
+        private void show_mode_menu () {
+            var menu = bubble_menu (mode_bubble);
+            string current = app.settings.get_string ("page-mode");
+            string[] ids = { "normal", "dim", "dark", "sepia", "night" };
+            string[] labels = { _("Normal"), _("Dimmed"), _("Dark"), _("Sepia"), _("Night") };
+            for (int i = 0; i < ids.length; i++) {
+                string id = ids[i];
+                menu.add_check_item (labels[i], id == current, () => app.settings.set_string ("page-mode", id));
             }
             popup_menu (menu);
         }

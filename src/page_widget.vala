@@ -72,10 +72,13 @@ namespace Singularity.Apps.Reader {
             var bounds = Graphene.Rect ().init (0, 0, w, h);
             var white = Gdk.RGBA ();
             white.parse ("white");
+            bool tinted = view.page_tint != null;
+            if (tinted) snapshot.push_color_matrix ((Graphene.Matrix) view.page_tint, view.page_tint_offset);
             snapshot.append_color (white, bounds);
             if (texture != null) {
                 snapshot.append_scaled_texture (texture, Gsk.ScalingFilter.TRILINEAR, bounds);
             }
+            if (tinted) snapshot.pop ();
             if (texture == null || texture_zoom != view.zoom) view.request_render (this);
             double z = view.zoom;
 

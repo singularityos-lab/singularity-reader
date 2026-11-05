@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="dev.sinty.reader" path="/dev/sinty/reader/">
+    <key name="page-mode" type="s">
+      <choices>
+        <choice value="normal"/>
+        <choice value="dim"/>
+        <choice value="dark"/>
+        <choice value="sepia"/>
+        <choice value="night"/>
+      </choices>
+      <default>'normal'</default>
+      <summary>How pages are tinted while reading</summary>
+    </key>
     <key name="highlight-color" type="s">
       <default>'#f5c211'</default>
       <summary>Default color for highlights</summary>
