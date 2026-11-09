@@ -87,9 +87,8 @@ namespace Singularity.Apps.Reader {
                 job.stride = surface.get_stride ();
                 job.pixels = surface.get_data ()[0 : surface.get_stride () * ph];
                 if (job.generation != generation) continue;
-                Idle.add (() => {
+                Async.post(this, () => {
                     rendered (job);
-                    return Source.REMOVE;
                 });
             }
             return null;

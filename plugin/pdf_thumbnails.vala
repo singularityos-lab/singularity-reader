@@ -28,7 +28,6 @@ namespace Singularity.Apps.Reader {
     public class PdfIconProvider : Object, Singularity.FileIconProvider {
         private const int MAX_SIZE = 512;
 
-        private static ThreadPool<ThumbnailJob>? pool = null;
         private GLib.Settings? files_settings = null;
 
         construct {
@@ -56,16 +55,11 @@ namespace Singularity.Apps.Reader {
                 return null;
             }
             var job = new ThumbnailJob (file.get_uri (), path, pixels, mtime);
-            SourceFunc callback = load_icon.callback;
-            job.done.connect (() => callback ());
             try {
-                if (pool == null) pool = new ThreadPool<ThumbnailJob>.with_owned_data ((j) => j.run (), 2, false);
-                pool.add (job);
-            } catch (ThreadError e) {
+                return yield Singularity.Async.run<Gdk.Texture?> ((c) => job.compute (), Singularity.Async.Qos.UTILITY);
+            } catch (Error e) {
                 return null;
             }
-            yield;
-            return job.texture;
         }
     }
 
@@ -74,29 +68,18 @@ namespace Singularity.Apps.Reader {
         public string path { get; construct; }
         public int pixels { get; construct; }
         public int64 mtime { get; construct; }
-        public Gdk.Texture? texture = null;
-
-        public signal void done ();
-
         public ThumbnailJob (string uri, string path, int pixels, int64 mtime) {
             Object (uri: uri, path: path, pixels: pixels, mtime: mtime);
         }
 
-        public void run () {
+        public Gdk.Texture? compute () {
             string cache = cache_path ();
             try {
-                if (FileUtils.test (cache, FileTest.EXISTS)) {
-                    texture = Gdk.Texture.from_filename (cache);
-                } else {
-                    texture = render (cache);
-                }
+                if (FileUtils.test (cache, FileTest.EXISTS)) return Gdk.Texture.from_filename (cache);
+                return render (cache);
             } catch (Error e) {
-                texture = null;
+                return null;
             }
-            Idle.add (() => {
-                done ();
-                return Source.REMOVE;
-            });
         }
 
         private string cache_path () {
