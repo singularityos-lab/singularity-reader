@@ -427,7 +427,7 @@ namespace Singularity.Apps.Reader {
                 hbox.append (date);
                 row.child = hbox;
                 string uri = info.get_uri ();
-                row.set_data<string> ("uri", uri);
+                Singularity.Focus.set_key (row, "recent:" + uri);
                 row.clicked.connect (() => app.open_file (File.new_for_uri (uri), this));
                 recent_list.append (row);
                 if (++count >= 8) break;
@@ -743,7 +743,6 @@ namespace Singularity.Apps.Reader {
 
         private void show_welcome () {
             set_tools_visible (false);
-            string? closed = document != null ? document.file.get_uri () : null;
             if (document != null) recovery.discard (document.file);
             view.unload ();
             if (find_popover != null) {
@@ -752,17 +751,6 @@ namespace Singularity.Apps.Reader {
             }
             fill_recent ();
             content_stack.visible_child_name = "welcome";
-            if (closed != null && Singularity.FormFactor.current () == Singularity.FormFactorKind.TV) {
-                Idle.add (() => {
-                    for (var c = recent_list.get_first_child (); c != null; c = c.get_next_sibling ()) {
-                        if (c.get_data<string> ("uri") == closed && c.get_mapped ()) {
-                            c.grab_focus ();
-                            break;
-                        }
-                    }
-                    return Source.REMOVE;
-                });
-            }
             set_sidebar_visible (false);
             set_doc_bubbles_visible (false);
             color_button.visible = false;
