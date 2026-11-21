@@ -28,7 +28,8 @@ namespace Singularity.Apps.Reader {
         internal DocumentView document_view { get { return view; } }
         public PageGrid page_grid;
         private ToolPanel tool_panel;
-        private Revealer tool_revealer;
+        private Singularity.Widgets.DetailPane tool_pane;
+        private bool tools_open = false;
         private ProContext pro;
         private ReflowView reflow;
         private Recovery recovery;
@@ -55,21 +56,20 @@ namespace Singularity.Apps.Reader {
             tool_panel = new ToolPanel (pro);
             register_tools ();
             tool_panel.close_requested.connect (() => set_tools_visible (false));
-            tool_revealer = new Revealer ();
-            tool_revealer.transition_type = RevealerTransitionType.SLIDE_LEFT;
-            tool_revealer.child = tool_panel;
-            tool_revealer.reveal_child = false;
-            tool_revealer.visible = false;
-            tool_revealer.notify["child-revealed"].connect (() => {
-                if (!tool_revealer.child_revealed && !tool_revealer.reveal_child) tool_revealer.visible = false;
-            });
             main_box.remove (content_stack);
             var split = new Box (Orientation.HORIZONTAL, 0);
             popover_host = split;
             split.vexpand = true;
             content_stack.hexpand = true;
-            split.append (content_stack);
-            split.append (tool_revealer);
+            tool_pane = new Singularity.Widgets.DetailPane (content_stack);
+            tool_pane.hexpand = true;
+            tool_pane.panel_width = ToolPanel.WIDTH;
+            tool_pane.set_panel (tool_panel);
+            tool_pane.attach_back_bubble (this);
+            tool_pane.panel_closed.connect (() => {
+                if (tools_open) set_tools_visible (false);
+            });
+            split.append (tool_pane);
             main_box.append (split);
             view.reloaded.connect (() => {
                 if (document == null) return;
@@ -169,14 +169,14 @@ namespace Singularity.Apps.Reader {
         }
 
         public void set_tools_visible (bool visible) {
+            tools_open = visible;
             if (!visible) {
                 tool_panel.leave_active ();
                 tool_panel.show_hub ();
                 view.tool = Tool.SELECT;
                 view.clear_overlays ();
             }
-            if (visible) tool_revealer.visible = true;
-            tool_revealer.reveal_child = visible;
+            tool_pane.reveal_panel = visible;
         }
 
         public void open_tool (string id) {
@@ -476,7 +476,7 @@ namespace Singularity.Apps.Reader {
             find_bubble = add_bubble_icon ("edit-find-symbolic", _("Find (Ctrl+F)"), () => open_find ());
             track (find_bubble);
 
-            track (add_bubble_icon ("applications-utilities-symbolic", _("All Tools"), () => set_tools_visible (!tool_revealer.reveal_child)));
+            track (add_bubble_icon ("applications-utilities-symbolic", _("All Tools"), () => set_tools_visible (!tools_open)));
             tool_bubble = add_bubble_icon ("reader-select-symbolic", _("Tool"), () => show_tool_menu ());
             track (tool_bubble);
             sign_bubble = add_bubble_icon ("reader-signature-symbolic", _("Sign"), () => { });
@@ -1060,7 +1060,7 @@ namespace Singularity.Apps.Reader {
             });
             add_action_entry (actions, "find", () => open_find ());
             add_action_entry (actions, "tools", () => {
-                if (document != null) set_tools_visible (!tool_revealer.reveal_child);
+                if (document != null) set_tools_visible (!tools_open);
             });
             add_action_entry (actions, "find-next", () => view.next_hit ());
             add_action_entry (actions, "find-previous", () => view.previous_hit ());
