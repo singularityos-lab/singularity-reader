@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="236" height="236" viewBox="0 0 236 236" fill="none"><defs><linearGradient id="ribbon_r" x1="150" y1="34" x2="150" y2="96" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#ffb84d" />
+<stop offset="100%" stop-color="#f08c00" />
+</linearGradient>
+</defs><path d="M141 36 H163 V96 L152 86 L141 96 Z" fill="url(#ribbon_r)" />
+</svg>

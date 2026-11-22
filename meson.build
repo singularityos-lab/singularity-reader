@@ -165,6 +165,43 @@ install_data('data/icons/dev.sinty.reader.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
 )
 
+iride = find_program('iride', required: get_option('iride'))
+if iride.found()
+  custom_target('iride-icon',
+    input: 'data/icons/iride/iride.json',
+    output: 'dev.sinty.reader.iride',
+    depend_files: files(
+      'data/icons/iride/layers/000.svg',
+      'data/icons/iride/layers/001.svg',
+      'data/icons/iride/layers/002.svg',
+      'data/icons/iride/layers/003.svg',
+      'data/icons/iride/layers/004.svg',
+      'data/icons/iride/layers/005.svg',
+      'data/icons/iride/layers/006.svg',
+      'data/icons/iride/layers/007.svg',
+      'data/icons/iride/layers/008.svg',
+      'data/icons/iride/layers/009.svg',
+      'data/icons/iride/layers/010.svg',
+      'data/icons/iride/layers/011.svg',
+      'data/icons/iride/layers/012.svg',
+      'data/icons/iride/layers/013.svg',
+      'data/icons/iride/layers/014.svg',
+      'data/icons/iride/layers/015.svg',
+      'data/icons/iride/layers/016.svg',
+      'data/icons/iride/layers/017.svg',
+      'data/icons/iride/layers/018.svg',
+      'data/icons/iride/layers/019.svg',
+      'data/icons/iride/layers/020.svg',
+      'data/icons/iride/layers/021.svg',
+      'data/icons/iride/layers/022.svg',
+      'data/icons/iride/layers/023.svg',
+    ),
+    command: [iride, 'build', meson.current_source_dir() / 'data' / 'icons' / 'iride', '@OUTPUT@'],
+    install: true,
+    install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
+  )
+endif
+
 export_test = executable('export-test',
   export_sources + files('tests/export_test.vala'),
   dependencies: [gtk_dep, gee_dep, cairo_dep, poppler_dep, m_dep, dependency('gdk-pixbuf-2.0'), dependency('zlib')],

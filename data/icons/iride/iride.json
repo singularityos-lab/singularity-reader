@@ -1,0 +1,288 @@
+{
+ "format": 1,
+ "canvas": [
+  236,
+  236
+ ],
+ "box": [
+  0,
+  0,
+  226,
+  212
+ ],
+ "stack": [
+  {
+   "clip": "M0 0H236V236H0Z",
+   "stack": [
+    {
+     "layer": "layers/000.svg",
+     "piece": "book"
+    },
+    {
+     "layer": "layers/001.svg",
+     "piece": "book"
+    },
+    {
+     "layer": "layers/002.svg",
+     "piece": "book"
+    },
+    {
+     "rim": "M118 66 C92 54 50 52 10 58 L10 198 C50 192 92 194 118 208 C144 194 186 192 226 198 L226 58 C186 52 144 54 118 66 Z",
+     "light": [
+      10.0,
+      52.0,
+      226.0,
+      208.0
+     ],
+     "piece": "book"
+    },
+    {
+     "layer": "layers/003.svg",
+     "piece": "book"
+    },
+    {
+     "layer": "layers/004.svg",
+     "piece": "book"
+    },
+    {
+     "layer": "layers/005.svg",
+     "piece": "book"
+    },
+    {
+     "layer": "layers/006.svg",
+     "piece": "page"
+    },
+    {
+     "layer": "layers/007.svg",
+     "piece": "fold"
+    },
+    {
+     "clip": "M118 58 C96 44 58 40 22 46 L22 178 C58 172 96 176 118 190 C140 176 178 172 214 178 L214 46 C178 40 140 44 118 58 Z",
+     "stack": [
+      {
+       "layer": "layers/008.svg",
+       "piece": "fold"
+      }
+     ]
+    },
+    {
+     "layer": "layers/009.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/010.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/011.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/012.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/013.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/014.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/015.svg",
+     "piece": "text-left"
+    },
+    {
+     "layer": "layers/016.svg",
+     "piece": "text-right"
+    },
+    {
+     "layer": "layers/017.svg",
+     "piece": "text-right"
+    },
+    {
+     "layer": "layers/018.svg",
+     "piece": "text-right"
+    },
+    {
+     "layer": "layers/019.svg",
+     "piece": "text-right"
+    },
+    {
+     "layer": "layers/020.svg",
+     "piece": "text-right"
+    },
+    {
+     "layer": "layers/021.svg",
+     "piece": "bookmark"
+    },
+    {
+     "layer": "layers/022.svg",
+     "piece": "bookmark"
+    },
+    {
+     "layer": "layers/023.svg",
+     "piece": "coast"
+    }
+   ]
+  }
+ ],
+ "motion": [
+  {
+   "piece": "book",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "opacity",
+     "from": [
+      1
+     ],
+     "at": 900,
+     "duration": 75,
+     "ease": "linear"
+    }
+   ]
+  },
+  {
+   "piece": "page",
+   "origin": [
+    118.0,
+    120.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      -0.02,
+      0.96
+     ],
+     "at": 80,
+     "duration": 250,
+     "ease": "linear"
+    },
+    {
+     "kind": "scale",
+     "from": [
+      0.02,
+      1.04
+     ],
+     "at": 330,
+     "duration": 270,
+     "ease": "out"
+    }
+   ]
+  },
+  {
+   "piece": "fold",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": []
+  },
+  {
+   "piece": "text-left",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": [
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 200,
+     "duration": 100,
+     "ease": "linear"
+    }
+   ]
+  },
+  {
+   "piece": "text-right",
+   "origin": [
+    118.0,
+    120.0
+   ],
+   "tracks": [
+    {
+     "kind": "scale",
+     "from": [
+      -0.02,
+      0.96
+     ],
+     "at": 80,
+     "duration": 250,
+     "ease": "linear"
+    },
+    {
+     "kind": "scale",
+     "from": [
+      0.02,
+      1.04
+     ],
+     "at": 330,
+     "duration": 270,
+     "ease": "out"
+    },
+    {
+     "kind": "opacity",
+     "from": [
+      0
+     ],
+     "at": 320,
+     "duration": 100,
+     "ease": "linear"
+    }
+   ]
+  },
+  {
+   "piece": "bookmark",
+   "origin": [
+    152.0,
+    37.0
+   ],
+   "tracks": [
+    {
+     "kind": "rotate",
+     "from": [
+      -24
+     ],
+     "at": 540,
+     "duration": 100,
+     "ease": "out"
+    },
+    {
+     "kind": "rotate",
+     "from": [
+      34
+     ],
+     "at": 640,
+     "duration": 120,
+     "ease": "linear"
+    },
+    {
+     "kind": "rotate",
+     "from": [
+      -10
+     ],
+     "at": 760,
+     "duration": 140,
+     "ease": "linear"
+    }
+   ]
+  },
+  {
+   "piece": "coast",
+   "origin": [
+    118.0,
+    118.0
+   ],
+   "tracks": []
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="236" height="236" viewBox="0 0 236 236" fill="none"><defs><linearGradient id="edge_r" x1="118" y1="170" x2="118" y2="200" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#dfe8ef" />
+<stop offset="100%" stop-color="#a9bfce" />
+</linearGradient>
+</defs><path d="M118 62 C96 48 58 44 20 50 L20 188 C58 182 96 184 118 198 C140 184 178 182 216 188 L216 50 C178 44 140 48 118 62 Z" fill="url(#edge_r)" />
+</svg>

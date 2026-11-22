@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="236" height="236" viewBox="0 0 236 236" fill="none"><defs><linearGradient id="spine_r" x1="104" y1="0" x2="132" y2="0" gradientUnits="userSpaceOnUse">
+<stop offset="0%" stop-color="#000000" stop-opacity="0" />
+<stop offset="50%" stop-color="#1e3a5f" stop-opacity="0.22" />
+<stop offset="100%" stop-color="#000000" stop-opacity="0" />
+</linearGradient>
+</defs><rect x="104" y="40" width="28" height="160" fill="url(#spine_r)" />
+</svg>
