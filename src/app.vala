@@ -41,7 +41,7 @@ namespace Singularity.Apps.Reader {
         }
     }
 
-    public class ReaderApp : Singularity.Application {
+    public class ReaderApp : Singularity.Application, Singularity.Migration.Migratable {
         public GLib.Settings settings { get; private set; }
         public SignatureStore signatures { get; private set; }
         public DocumentHistory history { get; private set; }
@@ -217,6 +217,43 @@ namespace Singularity.Apps.Reader {
             var window = get_active_window ();
             if (window == null) window = new ReaderWindow (this);
             window.present ();
+        }
+
+        public Variant save_model () {
+            return new VariantDict ().end ();
+        }
+
+        public async void restore_model (Variant model) throws Error {
+        }
+
+        public string window_kind (Gtk.Window window) {
+            return (window is ReaderWindow) ? "reader" : "";
+        }
+
+        public Variant save_window (Gtk.Window window) {
+            return ((ReaderWindow) window).save_migration ();
+        }
+
+        public string[] files () {
+            string[] all = {};
+            foreach (var window in get_windows ()) {
+                var reader = window as ReaderWindow;
+                if (reader == null) continue;
+                foreach (var f in reader.migration_files ()) all += f;
+            }
+            return all;
+        }
+
+        public async Gtk.Window? rebuild_window (string kind, Variant data) throws Error {
+            if (kind != "reader") return null;
+            ReaderWindow? window = null;
+            foreach (var w in get_windows ()) {
+                var rw = w as ReaderWindow;
+                if (rw != null && rw.document == null) window = rw;
+            }
+            if (window == null) window = new ReaderWindow (this);
+            window.restore_migration (data);
+            return window;
         }
 
         public override void open (File[] files, string hint) {

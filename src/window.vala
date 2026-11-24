@@ -205,6 +205,68 @@ namespace Singularity.Apps.Reader {
             content_stack.visible_child_name = "reflow";
         }
 
+        public Variant save_migration () {
+            var d = new VariantDict ();
+            d.insert_value ("page", new Variant.string (content_stack.visible_child_name ?? "welcome"));
+            d.insert_value ("sidebar", new Variant.boolean (get_sidebar_visible ()));
+            d.insert_value ("tools", new Variant.string (tools_open ? tool_panel.current () : ""));
+            if (document != null) {
+                d.insert_value ("file", new Variant.string (Singularity.Migration.portable_path (document.file)));
+                if (document.password != null) d.insert_value ("password", new Variant.string (document.password));
+                d.insert_value ("at", new Variant.int32 (view.current_page));
+                d.insert_value ("fit", new Variant.int32 ((int) view.zoom_mode));
+                if (view.zoom_mode == ZoomMode.CUSTOM) d.insert_value ("zoom", new Variant.double (view.zoom));
+                d.insert_value ("tool", new Variant ("(ii)", (int) view.tool, (int) view.markup_kind));
+                if (document.modified) {
+                    try {
+                        d.insert_value ("edits", new Variant.from_bytes (VariantType.BYTESTRING, new Bytes (document.current_bytes ()), true));
+                    } catch (Error e) {
+                        warning ("Unsaved changes cannot move: %s", e.message);
+                    }
+                }
+            }
+            return d.end ();
+        }
+
+        public void restore_migration (Variant data) throws Error {
+            var d = new VariantDict (data);
+            string file;
+            if (d.lookup ("file", "s", out file)) {
+                string? password = null;
+                d.lookup ("password", "s", out password);
+                var doc = new ReaderDocument (Singularity.Migration.local_file (file), password);
+                var edits = d.lookup_value ("edits", VariantType.BYTESTRING);
+                if (edits != null) doc.replace_bytes (edits.get_data_as_bytes ().get_data ());
+                int at = 0;
+                d.lookup ("at", "i", out at);
+                present_document (doc, at);
+                int fit = ZoomMode.FIT_WIDTH;
+                double zoom = 1.0;
+                d.lookup ("fit", "i", out fit);
+                if (fit == ZoomMode.CUSTOM && d.lookup ("zoom", "d", out zoom)) view.zoom_to (zoom);
+                else if (fit == ZoomMode.FIT_PAGE) view.fit_page ();
+                int tool, kind;
+                if (d.lookup ("tool", "(ii)", out tool, out kind)) {
+                    view.markup_kind = (MarkupKind) kind;
+                    view.tool = (Tool) tool;
+                }
+            }
+            bool sidebar;
+            if (d.lookup ("sidebar", "b", out sidebar)) set_sidebar_visible (sidebar);
+            string page = "welcome";
+            d.lookup ("page", "s", out page);
+            if (page == "organize") show_page_grid ();
+            else if (page == "reflow") show_reflow ();
+            string tools = "";
+            d.lookup ("tools", "s", out tools);
+            if (tools != "") open_tool (tools);
+        }
+
+        public string[] migration_files () {
+            if (document == null) return {};
+            return { Singularity.Migration.portable_path (document.file) };
+        }
+
         private void edit_form_field (int page, string name, Poppler.FormFieldType type, Poppler.Rectangle area, Widget widget) {
             var engine = pro.engine ();
             if (engine == null || name == "") return;
@@ -1126,7 +1188,11 @@ namespace Singularity.Apps.Reader {
         }
 
         public void show_document (ReaderDocument doc) {
-            int page = app.history.page_for (doc.file);
+            present_document (doc, app.history.page_for (doc.file));
+            recovery.offer (this, doc);
+        }
+
+        private void present_document (ReaderDocument doc, int page) {
             view.load (doc, page);
             sidebar.load (doc);
             content_stack.visible_child_name = "document";
@@ -1138,7 +1204,6 @@ namespace Singularity.Apps.Reader {
                 if (doc.modified) recovery.schedule (doc);
             });
             doc.page_changed.connect (() => recovery.schedule (doc));
-            recovery.offer (this, doc);
             view.page_changed.connect ((p) => {
                 app.history.remember (doc.file, p);
                 schedule_recent (doc.file, p);

@@ -130,6 +130,10 @@ namespace Singularity.Apps.Reader {
             page.enter ();
         }
 
+        public string current () {
+            return stack.visible_child_name ?? "hub";
+        }
+
         public void leave_active () {
             if (active != null) {
                 active.clear_modes ();
