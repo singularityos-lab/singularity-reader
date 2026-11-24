@@ -41,7 +41,7 @@ namespace Singularity.Apps.Reader {
         }
     }
 
-    public class ReaderApp : Singularity.Application, Singularity.Migration.Migratable {
+    public class ReaderApp : Singularity.Application, Singularity.Migration.Migratable, Singularity.Startup.Bootable {
         public GLib.Settings settings { get; private set; }
         public SignatureStore signatures { get; private set; }
         public DocumentHistory history { get; private set; }
@@ -213,10 +213,44 @@ namespace Singularity.Apps.Reader {
             set_accels_for_action ("win.tools", { "<Control><Shift>t" });
         }
 
-        public override void activate () {
+        public Singularity.Startup.Plan build_plan (Singularity.Startup.Request request) {
+            var plan = new Singularity.Startup.Plan ();
+            plan.version = "reader-1";
+            if (request.kind == Singularity.Startup.RequestKind.SERVICE) {
+                plan.main ("ready", Singularity.Startup.Category.PREPARE, (c) => {})
+                    .reaches (Singularity.Startup.Milestone.SHELL_READY)
+                    .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                    .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) {
+                var files = request.files ();
+                plan.main ("open-file", Singularity.Startup.Category.CONTENT, (c) => {
+                    open_files (files);
+                    c.window = get_active_window ();
+                }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+                  .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+                  .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+                return plan;
+            }
+            plan.main ("window", Singularity.Startup.Category.SHELL, (c) => {
+                c.window = show_window ();
+            }).reaches (Singularity.Startup.Milestone.SHELL_READY)
+              .reaches (Singularity.Startup.Milestone.CONTENT_READY)
+              .reaches (Singularity.Startup.Milestone.INTERACTIVE);
+            return plan;
+        }
+
+        public void handle_request (Singularity.Startup.Request request) {
+            if (request.kind == Singularity.Startup.RequestKind.OPEN) open_files (request.files ());
+            else show_window ();
+        }
+
+        private Gtk.Window show_window () {
             var window = get_active_window ();
             if (window == null) window = new ReaderWindow (this);
             window.present ();
+            return window;
         }
 
         public Variant save_model () {
@@ -256,7 +290,7 @@ namespace Singularity.Apps.Reader {
             return window;
         }
 
-        public override void open (File[] files, string hint) {
+        private void open_files (File[] files) {
             foreach (var file in files) open_file (file, null);
         }
 
